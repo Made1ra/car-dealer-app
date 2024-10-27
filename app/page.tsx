@@ -53,6 +53,7 @@ export default function Home() {
             id="make-select"
             value={makeId ? makeId : ""}
             onChange={handleChangeMake}
+            className="w-72 sm:w-96"
           >
             <option value="" disabled>
               Car model
@@ -69,7 +70,12 @@ export default function Home() {
           <Label htmlFor="year-select" className="text-gray-500">
             Select a year:
           </Label>
-          <Select id="year-select" value={year} onChange={handleChangeYear}>
+          <Select
+            id="year-select"
+            value={year}
+            onChange={handleChangeYear}
+            className="w-72 sm:w-96"
+          >
             {years.map((year) => (
               <option key={year} value={year}>
                 {year}
