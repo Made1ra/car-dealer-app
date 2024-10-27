@@ -1,101 +1,98 @@
-import Image from "next/image";
+"use client";
+
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { getMakesForVehicleType } from "@/app/lib/actions";
+import { Make } from "@/app/lib/definitions";
+import ArrowRight from "@/app/components/arrow-right";
+import Link from "next/link";
+import { getYears } from "@/app/lib/utils";
+import Button from "@/app/components/button";
+import Select from "@/app/components/select";
+import Label from "./components/label";
+
+const years = getYears();
 
 export default function Home() {
-  return (
-    <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-      <main className="row-start-2 flex flex-col items-center gap-8 sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-center font-[family-name:var(--font-geist-mono)] text-sm sm:text-left">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="rounded bg-black/[.05] px-1 py-0.5 font-semibold dark:bg-white/[.06]">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [makes, setMakes] = useState<Make[]>([]);
+  const [makeId, setMakeId] = useState<number | null>(null);
+  const [year, setYear] = useState(years[0]);
 
-        <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <a
-            className="flex h-10 items-center justify-center gap-2 rounded-full border border-solid border-transparent bg-foreground px-4 text-sm text-background transition-colors hover:bg-[#383838] sm:h-12 sm:px-5 sm:text-base dark:hover:bg-[#ccc]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const doesResultExists = makeId && year ? true : false;
+
+  const handleChangeMake = (event: ChangeEvent<HTMLSelectElement>) => {
+    setMakeId(+event.target.value);
+  };
+
+  const handleChangeYear = (event: ChangeEvent<HTMLSelectElement>) => {
+    setYear(+event.target.value);
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  };
+
+  useEffect(() => {
+    const fetchMakes = async () => {
+      const fetchedMakes = await getMakesForVehicleType();
+      setMakes(fetchedMakes);
+    };
+
+    fetchMakes();
+  }, []);
+
+  return (
+    <div className="mx-auto flex min-h-screen w-72 flex-col items-center p-8 pb-20 sm:w-96 sm:p-12">
+      <h1 className="m-2 text-xl font-bold">Car Dealer App</h1>
+      <h2 className="m-2 text-lg font-semibold">Find your car 🏎️</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="m-8 flex flex-col">
+          <Label htmlFor="make-select" className="text-gray-500">
+            Select a car model:
+          </Label>
+          <Select
+            id="make-select"
+            value={makeId ? makeId : ""}
+            onChange={handleChangeMake}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="flex h-10 items-center justify-center rounded-full border border-solid border-black/[.08] px-4 text-sm transition-colors hover:border-transparent hover:bg-[#f2f2f2] sm:h-12 sm:min-w-44 sm:px-5 sm:text-base dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <option value="" disabled>
+              Car model
+            </option>
+            {makes.length > 0 &&
+              makes.map(({ makeId, makeName }: Make) => (
+                <option key={makeId} value={makeId}>
+                  {makeName}
+                </option>
+              ))}
+          </Select>
         </div>
-      </main>
-      <footer className="row-start-3 flex flex-wrap items-center justify-center gap-6">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="m-8 flex flex-col">
+          <Label htmlFor="year-select" className="text-gray-500">
+            Select a year:
+          </Label>
+          <Select id="year-select" value={year} onChange={handleChangeYear}>
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="flex justify-center">
+          <Link
+            href={doesResultExists ? `/result/${makeId}/${year}` : "#"}
+            className={
+              doesResultExists
+                ? "inline-block cursor-pointer"
+                : "inline-block cursor-not-allowed"
+            }
+          >
+            <Button disabled={!doesResultExists}>
+              Next
+              <ArrowRight />
+            </Button>
+          </Link>
+        </div>
+      </form>
     </div>
   );
 }
