@@ -1,9 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getModelsForMakeIdYear } from "@/app/lib/actions";
-import { useEffect, useState } from "react";
 import { Model } from "@/app/lib//definitions";
+import { getModelsForMakeIdYear } from "@/app/lib/actions";
 import Button from "@/app/components/button";
 import ArrowRight from "@/app/components/arrow-right";
 
