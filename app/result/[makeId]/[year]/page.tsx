@@ -10,8 +10,8 @@ import ArrowRight from "@/app/components/arrow-right";
 export default function Result() {
   const { makeId, year } = useParams();
   const router = useRouter();
-  const [models, setModels] = useState<Model[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [models, setModels] = useState<Model[]>([]);
 
   const handleClick = () => {
     router.back();
