@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState, ChangeEvent, FormEvent, FormHTMLAttributes } from "react";
+import {
+  useId,
+  useState,
+  ChangeEvent,
+  FormEvent,
+  FormHTMLAttributes,
+} from "react";
 
 import { getYears } from "@/app/lib/utils";
 import Label from "@/app/components/label";
@@ -16,6 +22,10 @@ function Form({
   children,
   ...props
 }: FormHTMLAttributes<HTMLFormElement>) {
+  const id = useId();
+  const makeSelectId = `make-select-${id}`;
+  const yearSelectId = `year-select-${id}`;
+
   const [makeId, setMakeId] = useState<number | null>(null);
   const [year, setYear] = useState(years[0]);
 
@@ -36,11 +46,11 @@ function Form({
   return (
     <form onSubmit={handleSubmit} className={className} {...props}>
       <div className="m-8 flex flex-col">
-        <Label htmlFor="make-select" className="text-gray-500">
+        <Label htmlFor={makeSelectId} className="text-gray-500">
           Select a car model:
         </Label>
         <Select
-          id="make-select"
+          id={makeSelectId}
           value={makeId ? makeId : ""}
           onChange={handleChangeMake}
           className="w-72 sm:w-96"
@@ -52,11 +62,11 @@ function Form({
         </Select>
       </div>
       <div className="m-8 flex flex-col">
-        <Label htmlFor="year-select" className="text-gray-500">
+        <Label htmlFor={yearSelectId} className="text-gray-500">
           Select a year:
         </Label>
         <Select
-          id="year-select"
+          id={yearSelectId}
           value={year}
           onChange={handleChangeYear}
           className="w-72 sm:w-96"
