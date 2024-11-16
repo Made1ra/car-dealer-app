@@ -1,10 +1,6 @@
 import { SVGAttributes } from "react";
 
-interface SVGProps extends SVGAttributes<HTMLOrSVGElement> {
-  className?: string | undefined;
-}
-
-export default function ArrowRight({ className, ...props }: SVGProps) {
+function ArrowRight({ className, ...props }: SVGAttributes<HTMLOrSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -23,3 +19,5 @@ export default function ArrowRight({ className, ...props }: SVGProps) {
     </svg>
   );
 }
+
+export default ArrowRight;

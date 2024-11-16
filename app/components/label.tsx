@@ -1,9 +1,10 @@
 import { LabelHTMLAttributes } from "react";
 
-interface SelectProps extends LabelHTMLAttributes<HTMLLabelElement> {
-  className?: string | undefined;
-}
-
-export default function Select({ className, ...props }: SelectProps) {
+function Select({
+  className,
+  ...props
+}: LabelHTMLAttributes<HTMLLabelElement>) {
   return <label className={`text-gray-500 ${className}`} {...props}></label>;
 }
+
+export default Select;
