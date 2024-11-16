@@ -1,46 +1,63 @@
-"use client";
+import { notFound } from "next/navigation";
+import Link from "next/link";
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Model } from "@/app/lib//definitions";
-import { getModelsForMakeIdYear } from "@/app/lib/actions";
-import Button from "@/app/components/button";
+import { Make, Model } from "@/app/lib//definitions";
+import {
+  getMakesForVehicleType,
+  getModelsForMakeIdYear,
+} from "@/app/lib/actions";
+import { getYears } from "@/app/lib/utils";
 import ArrowRight from "@/app/components/arrow-right";
 
-export default function Result() {
-  const { makeId, year } = useParams();
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [models, setModels] = useState<Model[]>([]);
+export async function generateStaticParams() {
+  try {
+    const years = getYears();
+    const makes: Make[] = await getMakesForVehicleType();
+    if (!makes) {
+      return [];
+    }
 
-  const handleClick = () => {
-    router.back();
-  };
+    const makeIds = makes.map(({ makeId }) => {
+      return {
+        makeId: makeId.toString(),
+      };
+    });
 
-  useEffect(() => {
-    const fetchModels = async () => {
-      setIsLoading(true);
-      if (typeof makeId === "string" && typeof year === "string") {
-        const fetchedModels = await getModelsForMakeIdYear(+makeId, +year);
-        setModels(fetchedModels);
-      }
+    return years.flatMap((year) =>
+      makeIds.map((makeId) => ({ ...makeId, year: year.toString() })),
+    );
+  } catch (error) {
+    console.error(error);
 
-      setIsLoading(false);
-    };
+    return [];
+  }
+}
 
-    fetchModels();
-  }, [makeId, year]);
+export default async function Result({
+  params,
+}: {
+  params: Promise<{ makeId: string; year: string }>;
+}) {
+  const { makeId, year } = await params;
+  if (!makeId || !year) {
+    notFound();
+  }
+
+  const models: Model[] = await getModelsForMakeIdYear(+makeId, +year);
 
   return (
     <div>
-      <Button onClick={handleClick} className="mt-8">
+      <Link
+        href="/"
+        className="mx-auto mt-8 flex w-fit justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2 font-medium text-white shadow transition duration-150 ease-in-out hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300 max-sm:px-2 max-sm:py-1"
+      >
         <ArrowRight className="-rotate-180" />
         Go back
-      </Button>
+      </Link>
       <div className="mx-auto flex min-h-screen w-72 flex-col items-center p-8 pb-20 sm:w-96 sm:p-12">
         <h1 className="mb-8 text-xl font-bold">Searched cars:</h1>
-        {isLoading ? (
-          <p className="text-lg font-semibold">Loading...</p>
+        {models.length === 0 ? (
+          <h2 className="text-lg font-semibold">No cars found 😥</h2>
         ) : (
           <ul>
             {models.map(({ modelId, modelName, makeName }) => (
